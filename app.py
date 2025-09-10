@@ -1,9 +1,16 @@
 from flask import Flask, render_template, request
+from flask import Flask
+import os
 import yfinance as yf
 import plotly.graph_objs as go
 import pandas as pd
 
 app = Flask(__name__)
+
+# 👇 Health check route for UptimeRobot
+@app.route("/ping")
+def ping():
+    return "OK", 200
 
 @app.route("/", methods=["GET", "POST"])
 def index():
@@ -69,5 +76,17 @@ def index():
     return render_template("index.html", graphJSON=graphJSON, table_html=table_html, error=error)
 
 
+# if __name__ == "__main__":
+    # app.run(debug=True)
+
+    
 if __name__ == "__main__":
-    app.run(debug=True)
+    # Check if PORT env variable exists (Render pe hamesha hota hai)
+    port = os.environ.get("PORT")
+
+    if port:
+        # 🔹 Render / Deployment ke liye
+        app.run(host="0.0.0.0", port=int(port))
+    else:
+        # 🔹 Local machine ke liye
+        app.run(debug=True)
